@@ -7,6 +7,8 @@ package com.ctfiyh.restaurant.restaurant.api;
 
 import java.time.LocalDateTime;
 
+import com.ctfiyh.restaurant.restaurant.shared.ReservationRepresentation;
+
 /**
  *
  * @author lucas
@@ -16,6 +18,32 @@ public record ReservationMessage(LocalDateTime reservationTime, String customerN
     public ReservationMessage {
         if (reservationTime == null || customerName == null || numberOfGuests <= 0) {
             throw new IllegalArgumentException("Invalid reservation details");
+        }
+    }
+
+    public static class Builder implements ReservationRepresentation<ReservationMessage> {
+        private LocalDateTime dateTime;
+        private String name;
+        private int partySize;
+
+        public Builder withDateTime(LocalDateTime dateTime) {
+            this.dateTime = dateTime;
+            return this;
+        }
+
+        public Builder withCustomerName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withNumberOfPeople(int count) {
+            this.partySize = count;
+            return this;
+        }
+
+        @Override
+        public ReservationMessage build() {
+            return new ReservationMessage(dateTime, name, partySize);
         }
     }
 

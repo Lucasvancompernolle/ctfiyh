@@ -1,10 +1,7 @@
 spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/ctfiyh
   jpa:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
-    enabled: false # or true if you want migrations to run in tests
+    enabled: true
