@@ -1,8 +1,9 @@
 CREATE TABLE reservation (
     id BIGINT PRIMARY KEY,
-    customer_id VARCHAR(36) NOT NULL,
-    date_time TIMESTAMP NOT NULL,
-    number_of_people INT NOT NULL, 
-    index idx_customer_id (customer_id),
-    index idx_date_time (date_time)
+    customer_name VARCHAR(36) NOT NULL,
+    reservation_time TIMESTAMP NOT NULL,
+    number_of_people INT NOT NULL
 );
+ 
+CREATE INDEX idx_reservation_customer_id ON reservation(customer_name);
+CREATE INDEX idx_reservation_customer_date ON reservation(customer_name, reservation_time);

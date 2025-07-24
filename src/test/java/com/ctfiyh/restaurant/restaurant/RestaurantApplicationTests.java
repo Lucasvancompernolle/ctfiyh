@@ -1,15 +1,10 @@
 package com.ctfiyh.restaurant.restaurant;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
-@Import(TestcontainersConfiguration.class)
 @SpringBootTest
-class RestaurantApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
+@ActiveProfiles("test")
+public abstract class RestaurantApplicationTests {
 
 }

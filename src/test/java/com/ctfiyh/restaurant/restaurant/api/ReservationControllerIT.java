@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
+import com.ctfiyh.restaurant.restaurant.RestaurantApplicationTests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,11 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author lucas
  */
-@Import(TestcontainersConfiguration.class)
-@SpringBootTest()
+
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
-public class ReservationControllerIT {
+public class ReservationControllerIT extends RestaurantApplicationTests {
 
     private static final String RESERVATION_ENDPOINT = "/api/reservations/";
 
@@ -46,8 +45,7 @@ public class ReservationControllerIT {
         mockMvc.perform(post(RESERVATION_ENDPOINT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(aReservationMessage()))
-                .andExpect(
-                        status().isOk());
+                .andExpect(status().isOk());
 
     }
 

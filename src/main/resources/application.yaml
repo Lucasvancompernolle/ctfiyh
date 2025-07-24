@@ -1,8 +1,7 @@
 spring:
     application:
         name: restaurant_reservation_service
-    datasource:
-        url: jdbc:postgresql://localhost:5432/ctfiyh
+    datasource: 
         driver-class-name: org.postgresql.Driver
     jpa:
         hibernate:

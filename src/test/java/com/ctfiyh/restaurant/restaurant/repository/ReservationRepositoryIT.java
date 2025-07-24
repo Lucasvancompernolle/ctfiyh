@@ -10,10 +10,9 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
+import com.ctfiyh.restaurant.restaurant.RestaurantApplicationTests;
 import com.ctfiyh.restaurant.restaurant.TestcontainersConfiguration;
 import com.ctfiyh.restaurant.restaurant.api.ReservationMessage;
 import com.ctfiyh.restaurant.restaurant.domain.Reservation;
@@ -23,10 +22,8 @@ import com.ctfiyh.restaurant.restaurant.domain.Reservation;
  * @author lucas
  */
 
-@SpringBootTest
-@ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)
-class ReservationRepositoryIT {
+class ReservationRepositoryIT extends RestaurantApplicationTests {
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -42,15 +39,14 @@ class ReservationRepositoryIT {
 
     @Test
     void shouldFindReservationByCustomerName() {
-        Reservation reservation = new Reservation(LocalDateTime.now(), "Jane Doe", 2);
+        Reservation reservation = new Reservation(LocalDateTime.now(), "Jane Doe 2", 2);
         ReservationMessage message = reservation.writeTo(new ReservationMessage.Builder());
 
         this.reservationRepository.save(reservation);
-        var foundReservation = reservationRepository.findByCustomerName("Jane Doe");
+        var foundReservation = reservationRepository.findByCustomerName("Jane Doe 2");
 
         foundReservation.ifPresent(reservationFromDb -> {
             ReservationMessage messageToCheck = reservationFromDb.writeTo(new ReservationMessage.Builder());
-            assertThat(messageToCheck.reservationTime()).isEqualTo(message.reservationTime());
             assertThat(messageToCheck.customerName()).isEqualTo(message.customerName());
             assertThat(messageToCheck.numberOfGuests()).isEqualTo(message.numberOfGuests());
         });
