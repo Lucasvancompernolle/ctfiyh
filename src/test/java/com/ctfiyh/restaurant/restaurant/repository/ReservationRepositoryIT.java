@@ -34,7 +34,7 @@ class ReservationRepositoryIT extends RestaurantApplicationTests {
 
         this.reservationRepository.save(reservation);
 
-        assertThat(reservationRepository.findByCustomerName("John Doe")).isNotEmpty();
+        assertThat(reservationRepository.findByCustomerName("John Doe").getFirst().equals(reservation));
     }
 
     @Test
@@ -45,7 +45,7 @@ class ReservationRepositoryIT extends RestaurantApplicationTests {
         this.reservationRepository.save(reservation);
         var foundReservation = reservationRepository.findByCustomerName("Jane Doe 2");
 
-        foundReservation.ifPresent(reservationFromDb -> {
+        foundReservation.forEach(reservationFromDb -> {
             ReservationMessage messageToCheck = reservationFromDb.writeTo(new ReservationMessage.Builder());
             assertThat(messageToCheck.customerName()).isEqualTo(message.customerName());
             assertThat(messageToCheck.numberOfGuests()).isEqualTo(message.numberOfGuests());

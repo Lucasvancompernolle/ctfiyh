@@ -5,11 +5,17 @@
 
 package com.ctfiyh.restaurant.restaurant.api;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.ctfiyh.restaurant.restaurant.service.ReservationService;
 
 /**
  *
@@ -19,13 +25,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/reservations")
 public class ReservationController {
 
-    public ReservationController() {
+    private final ReservationService reservationService;
+
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
-    @PostMapping("/")
-    public ResponseEntity<String> createReservation(@RequestBody ReservationMessage entity) {
+    @GetMapping("/customers/{customerName}")
+    public ResponseEntity<List<ReservationMessage>> getReservationsByCustomerName(@PathVariable String customerName) {
+        return ResponseEntity.ok(this.reservationService.getReservationsByCustomerName(customerName));
+    }
 
-        return ResponseEntity.ok("Reservation created successfully");
+    @PostMapping()
+    public ResponseEntity<Void> createReservation(@RequestBody ReservationMessage entity) {
+        this.reservationService.createReservation(entity);
+        return ResponseEntity.noContent().build();
     }
 
 }

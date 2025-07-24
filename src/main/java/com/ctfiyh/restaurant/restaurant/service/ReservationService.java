@@ -5,6 +5,8 @@
 
 package com.ctfiyh.restaurant.restaurant.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,14 @@ import com.ctfiyh.restaurant.restaurant.api.ReservationMessage;
 import com.ctfiyh.restaurant.restaurant.domain.Reservation;
 import com.ctfiyh.restaurant.restaurant.repository.ReservationRepository;
 
+import jakarta.transaction.Transactional;
+
 /**
  *
  * @author lucas
  */
 @Service
+@Transactional
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -25,6 +30,13 @@ public class ReservationService {
 
     public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
+    }
+
+    public List<ReservationMessage> getReservationsByCustomerName(String customerName) {
+
+        return this.reservationRepository.findByCustomerName(customerName).stream()
+                .map(reservation -> reservation.writeTo(new ReservationMessage.Builder()))
+                .toList();
     }
 
     public void createReservation(ReservationMessage reservationMessage) {

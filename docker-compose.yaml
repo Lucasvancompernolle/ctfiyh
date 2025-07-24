@@ -1,0 +1,39 @@
+
+services:
+  ms-restaurant:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ms-restaurant
+    ports:
+      - "5002:5000"
+    environment:
+      # - SPRING_PROFILES_ACTIVE=docker
+      - DB_URL=jdbc:postgresql://db-restaurant:5432/restaurantdb
+      - DB_USERNAME=restaurant_user
+      - DB_PASSWORD=restaurant_password
+      - PORT=5000 
+    depends_on:
+      db-restaurant:
+        condition: service_healthy
+    
+  db-restaurant:
+    image: postgres:latest
+    container_name: db-restaurant
+    restart: no
+    environment:
+      POSTGRES_DB: restaurantdb
+      POSTGRES_USER: restaurant_user
+      POSTGRES_PASSWORD: restaurant_password
+    ports:
+      - "5432:5432"  
+    volumes:
+      - db-restaurant_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U restaurant_user -d restaurantdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+
+volumes:
+  db-restaurant_data:    
