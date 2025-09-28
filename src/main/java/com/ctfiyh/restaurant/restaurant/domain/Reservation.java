@@ -42,7 +42,7 @@ public class Reservation {
 
     public <T> T writeTo(ReservationRepresentation<T> representation) {
         return representation
-                .withDateTime(this.reservationTime)
+                .withDateTime(this.reservationTime.toString())
                 .withCustomerName(this.customerName)
                 .withNumberOfPeople(this.numberOfPeople)
                 .build();

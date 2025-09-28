@@ -4,8 +4,7 @@
  */
 
 package com.ctfiyh.restaurant.restaurant.shared;
-
-import java.time.LocalDateTime;
+ 
 
 /**
  *
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
  */
 public interface ReservationRepresentation<T> {
 
-    public ReservationRepresentation<T> withDateTime(LocalDateTime dateTime);
+    public ReservationRepresentation<T> withDateTime(String dateTime);
 
     public ReservationRepresentation<T> withCustomerName(String customerName);
 

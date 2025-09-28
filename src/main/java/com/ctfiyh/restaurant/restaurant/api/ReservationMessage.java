@@ -6,6 +6,7 @@
 package com.ctfiyh.restaurant.restaurant.api;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import com.ctfiyh.restaurant.restaurant.shared.ReservationRepresentation;
 
@@ -13,20 +14,38 @@ import com.ctfiyh.restaurant.restaurant.shared.ReservationRepresentation;
  *
  * @author lucas
  */
-public record ReservationMessage(LocalDateTime reservationTime, String customerName, int numberOfGuests) {
+public record ReservationMessage(String reservationTime, String customerName, int numberOfGuests) {
 
     public ReservationMessage {
-        if (reservationTime == null || customerName == null || numberOfGuests <= 0) {
-            throw new IllegalArgumentException("Invalid reservation details");
+
+    }
+
+    public Optional<Exception> validateMessage() {
+        try {
+            if (reservationTime == null) {
+                throw new IllegalArgumentException("Reservation time cannot be null");
+            }
+            if (customerName == null || customerName.isBlank()) {
+                throw new IllegalArgumentException("Customer name cannot be null or blank");
+            }
+            if (numberOfGuests <= 0) {
+                throw new IllegalArgumentException("Number of guests must be greater than zero");
+            }
+            LocalDateTime.parse(reservationTime);
+            return Optional.empty();
+
+        } catch (Exception e) {
+            return Optional.of(e);
         }
+
     }
 
     public static class Builder implements ReservationRepresentation<ReservationMessage> {
-        private LocalDateTime dateTime;
+        private String dateTime;
         private String name;
         private int partySize;
 
-        public Builder withDateTime(LocalDateTime dateTime) {
+        public Builder withDateTime(String dateTime) {
             this.dateTime = dateTime;
             return this;
         }
@@ -45,15 +64,15 @@ public record ReservationMessage(LocalDateTime reservationTime, String customerN
         public ReservationMessage build() {
             return new ReservationMessage(dateTime, name, partySize);
         }
+
     }
 
     @Override
     public String toString() {
-        return "ReservationMessage{" +
-                "reservationTime=" + reservationTime +
-                ", customerName='" + customerName + '\'' +
-                ", numberOfGuests=" + numberOfGuests +
-                '}';
+        return "ReservationMessage{"
+                + "reservationTime=" + reservationTime
+                + ", customerName=" + customerName +
+                ", numberOfGuests=" + numberOfGuests + '}';
     }
 
 }

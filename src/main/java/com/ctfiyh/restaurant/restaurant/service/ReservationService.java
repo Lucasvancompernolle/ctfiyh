@@ -6,6 +6,7 @@
 package com.ctfiyh.restaurant.restaurant.service;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +43,20 @@ public class ReservationService {
     public void createReservation(ReservationMessage reservationMessage) {
 
         this.reservationRepository.save(new Reservation(
-                reservationMessage.reservationTime(),
+                LocalDateTime.parse(reservationMessage.reservationTime()),
                 reservationMessage.customerName(),
                 reservationMessage.numberOfGuests()));
 
         this.logger.info("Creating reservation for {}", reservationMessage);
+    }
+
+    public List<ReservationMessage> getReservationsByTimeRange(LocalDateTime start, LocalDateTime end) {
+        return this.reservationRepository.findByReservationTimeRange(
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1))
+                .stream()
+                .map(reservation -> reservation.writeTo(new ReservationMessage.Builder()))
+                .toList();
     }
 
 }

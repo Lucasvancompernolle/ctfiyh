@@ -52,4 +52,15 @@ class ReservationRepositoryIT extends RestaurantApplicationTests {
         });
     }
 
+    @Test
+    void shouldFindReservationByTimeRange() {
+        LocalDateTime now = LocalDateTime.now();
+        Reservation reservation = new Reservation(now.plusHours(2), "Alice", 3); 
+
+        this.reservationRepository.save(reservation);
+        
+        var foundReservations = reservationRepository.findByReservationTimeRange(now, now.plusDays(1));
+        assertThat(foundReservations).isNotEmpty();
+    }
+
 }

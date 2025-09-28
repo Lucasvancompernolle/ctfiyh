@@ -5,10 +5,12 @@
 
 package com.ctfiyh.restaurant.restaurant.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.processing.SQL;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.ctfiyh.restaurant.restaurant.domain.Reservation;
 
@@ -18,7 +20,10 @@ import com.ctfiyh.restaurant.restaurant.domain.Reservation;
  */
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    @SQL("SELECT * FROM reservations WHERE customer_name = ?1")
+    @SQL("SELECT * FROM reservation WHERE customer_name = ?1")
     List<Reservation> findByCustomerName(String customerName);
+
+    @Query(value = "SELECT * FROM reservation WHERE reservation_time >= ?1 AND reservation_time <= ?2", nativeQuery = true)
+    List<Reservation> findByReservationTimeRange(LocalDateTime minReservationTime, LocalDateTime maxReservationTime);
 
 }
