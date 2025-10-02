@@ -9,7 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc; 
 import org.springframework.context.annotation.Import;
@@ -41,7 +40,8 @@ public class ReservationControllerIT extends RestaurantApplicationTests{
     @ParameterizedTest()
     @CsvSource({
         "2025-09-15T14:23:45, John Doe, 4",
-        "2025-09-16T10:00:00, Alice, 2"
+        "2025-09-16T10:00:00, Alice, 2",
+         "2025-09-16T10:00:00, Alice, 10"
     })
     public void shouldSucceedInCreatingReservation(String time, String name, int guests) throws Exception {
         System.out.println("Testing with: " + aReservationMessage(time, name, guests));
@@ -58,6 +58,9 @@ public class ReservationControllerIT extends RestaurantApplicationTests{
         "2025-09-16, Alice, -5",
         "10:00:00, , 3", 
         ", Alice, 10", 
+        "2025-09-16T10:00:00, Alice, 11",
+        "2025-09-16T02:00:00, John Doe, 2",
+        "2025-09-16T23:00:00, John Doe, 2"
     })
     public void shouldFailInCreatingReservation(String time, String name, int guests) throws Exception {
         System.out.println("Testing with: " + aReservationMessage(time, name, guests));
@@ -68,7 +71,7 @@ public class ReservationControllerIT extends RestaurantApplicationTests{
                 .andExpect(result -> System.out.println("Response: " + result.getResponse().getContentAsString()));
 
     }
-
+ 
     private String aReservationMessage(String time, String name, int guests) throws JsonProcessingException {
         return objectMapper.writeValueAsString(new ReservationMessage.Builder()
         .withDateTime(time)

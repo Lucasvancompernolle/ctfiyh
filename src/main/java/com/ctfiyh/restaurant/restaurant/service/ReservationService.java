@@ -6,15 +6,21 @@
 package com.ctfiyh.restaurant.restaurant.service;
 
 import java.util.List;
-import java.time.LocalDateTime;
+import java.time.LocalDateTime; 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ctfiyh.restaurant.restaurant.api.ReservationMessage;
+import com.ctfiyh.restaurant.restaurant.api.ReservationMessageValidator;
+import com.ctfiyh.restaurant.restaurant.domain.InvalidReservation;
 import com.ctfiyh.restaurant.restaurant.domain.Reservation;
-import com.ctfiyh.restaurant.restaurant.repository.ReservationRepository;
+import com.ctfiyh.restaurant.restaurant.domain.ReservationResult;
+import com.ctfiyh.restaurant.restaurant.domain.ValidReservation;
+import com.ctfiyh.restaurant.restaurant.predicate.HasAvailableSeats;
+import com.ctfiyh.restaurant.restaurant.predicate.IsInsideBusinessHours;
+import com.ctfiyh.restaurant.restaurant.repository.ReservationRepository; 
 
 import jakarta.transaction.Transactional;
 
@@ -26,11 +32,18 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class ReservationService {
 
-    private final ReservationRepository reservationRepository;
     private final Logger logger = LoggerFactory.getLogger(ReservationService.class);
+    
+    private final ReservationRepository reservationRepository;
+    private final HasAvailableSeats hasAvailableSeats;
+    private final IsInsideBusinessHours isInsideBusinessHours;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository,
+            HasAvailableSeats hasAvailableSeats,
+            IsInsideBusinessHours isInsideBusinessHours) {
         this.reservationRepository = reservationRepository;
+        this.hasAvailableSeats = hasAvailableSeats;
+        this.isInsideBusinessHours = isInsideBusinessHours;
     }
 
     public List<ReservationMessage> getReservationsByCustomerName(String customerName) {
@@ -40,7 +53,22 @@ public class ReservationService {
                 .toList();
     }
 
-    public void createReservation(ReservationMessage reservationMessage) {
+    public ReservationResult<ReservationMessage> createReservation(ReservationMessage reservationMessage) {
+
+        ReservationMessageValidator messageValidator = new ReservationMessageValidator(reservationMessage);
+         
+        
+        if (!messageValidator.isValid()) {
+            return new InvalidReservation(messageValidator.validationError().get());
+        }
+
+        if(!this.isInsideBusinessHours.test(reservationMessage)) {
+            return new InvalidReservation("Reservation time is outside business hours (10:00 - 22:00)");
+        }
+
+        if (!this.hasAvailableSeats.test(reservationMessage)) {
+            return new InvalidReservation("Not enough available seats for the requested reservation");
+        }
 
         this.reservationRepository.save(new Reservation(
                 LocalDateTime.parse(reservationMessage.reservationTime()),
@@ -48,6 +76,9 @@ public class ReservationService {
                 reservationMessage.numberOfGuests()));
 
         this.logger.info("Creating reservation for {}", reservationMessage);
+
+        return new ValidReservation("Reservation created successfully");
+
     }
 
     public List<ReservationMessage> getReservationsByTimeRange(LocalDateTime start, LocalDateTime end) {
@@ -57,6 +88,10 @@ public class ReservationService {
                 .stream()
                 .map(reservation -> reservation.writeTo(new ReservationMessage.Builder()))
                 .toList();
+    }
+
+    public int getReservedSeatsOn(LocalDateTime dateTime) {
+        return this.reservationRepository.countReservedSeatsOn(dateTime);
     }
 
 }

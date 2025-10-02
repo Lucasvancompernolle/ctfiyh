@@ -4,9 +4,7 @@
  */
 
 package com.ctfiyh.restaurant.restaurant.api;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
+  
 
 import com.ctfiyh.restaurant.restaurant.shared.ReservationRepresentation;
 
@@ -15,31 +13,7 @@ import com.ctfiyh.restaurant.restaurant.shared.ReservationRepresentation;
  * @author lucas
  */
 public record ReservationMessage(String reservationTime, String customerName, int numberOfGuests) {
-
-    public ReservationMessage {
-
-    }
-
-    public Optional<Exception> validateMessage() {
-        try {
-            if (reservationTime == null) {
-                throw new IllegalArgumentException("Reservation time cannot be null");
-            }
-            if (customerName == null || customerName.isBlank()) {
-                throw new IllegalArgumentException("Customer name cannot be null or blank");
-            }
-            if (numberOfGuests <= 0) {
-                throw new IllegalArgumentException("Number of guests must be greater than zero");
-            }
-            LocalDateTime.parse(reservationTime);
-            return Optional.empty();
-
-        } catch (Exception e) {
-            return Optional.of(e);
-        }
-
-    }
-
+  
     public static class Builder implements ReservationRepresentation<ReservationMessage> {
         private String dateTime;
         private String name;
@@ -65,7 +39,7 @@ public record ReservationMessage(String reservationTime, String customerName, in
             return new ReservationMessage(dateTime, name, partySize);
         }
 
-    }
+    } 
 
     @Override
     public String toString() {

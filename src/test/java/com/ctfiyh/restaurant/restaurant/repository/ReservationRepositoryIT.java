@@ -62,5 +62,19 @@ class ReservationRepositoryIT extends RestaurantApplicationTests {
         var foundReservations = reservationRepository.findByReservationTimeRange(now, now.plusDays(1));
         assertThat(foundReservations).isNotEmpty();
     }
+    
+    
+    @Test
+    void shouldCountReservedSeatsOn() {
+        LocalDateTime reservationTime = LocalDateTime.now().plusHours(3);
+        Reservation reservation1 = new Reservation(reservationTime, "Bob", 2);
+        Reservation reservation2 = new Reservation(reservationTime, "Charlie", 3);
+
+        this.reservationRepository.save(reservation1);
+        this.reservationRepository.save(reservation2);
+
+        int totalReservedSeats = reservationRepository.countReservedSeatsOn(reservationTime);
+        assertThat(totalReservedSeats).isEqualTo(5);
+    }
 
 }

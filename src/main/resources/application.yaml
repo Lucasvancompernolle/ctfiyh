@@ -14,3 +14,6 @@ spring:
         locations: classpath:db/migration, classpath:db/data 
 server:
   port: ${PORT:5000}
+
+restaurant:
+  total-seats: 10

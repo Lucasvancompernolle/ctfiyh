@@ -48,4 +48,8 @@ public class Reservation {
                 .build();
     }
 
+    public int numberOfPeople() {
+        return this.numberOfPeople;
+    }
+
 }

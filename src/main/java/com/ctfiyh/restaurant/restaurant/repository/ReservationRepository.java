@@ -26,4 +26,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query(value = "SELECT * FROM reservation WHERE reservation_time >= ?1 AND reservation_time <= ?2", nativeQuery = true)
     List<Reservation> findByReservationTimeRange(LocalDateTime minReservationTime, LocalDateTime maxReservationTime);
 
+    @Query(value = "SELECT SUM(number_of_people) FROM reservation WHERE reservation_time = ?1", nativeQuery = true)
+    int countReservedSeatsOn(LocalDateTime dateTime);
+
 }

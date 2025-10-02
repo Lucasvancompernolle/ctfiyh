@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ctfiyh.restaurant.restaurant.domain.ReservationResult;
+import com.ctfiyh.restaurant.restaurant.exception.InvalidReservationException;
 import com.ctfiyh.restaurant.restaurant.service.ReservationService;
-
+ 
 /**
  *
  * @author lucas
@@ -26,11 +29,12 @@ import com.ctfiyh.restaurant.restaurant.service.ReservationService;
 @RequestMapping("/api/reservations")
 public class ReservationController {
 
-    private final ReservationService reservationService;
+    private final ReservationService reservationService; 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(ReservationController.class);
 
     public ReservationController(ReservationService reservationService) {
-        this.reservationService = reservationService;
+        this.reservationService = reservationService; 
+
     }
 
     @GetMapping("/customers/{customerName}")
@@ -40,16 +44,19 @@ public class ReservationController {
 
     @PostMapping()
     public ResponseEntity<String> createReservation(@RequestBody ReservationMessage entity) {
-        var validationResult = entity.validateMessage();
-
-        if (validationResult.isPresent()) {
-            logger.error("Validation error: {}", validationResult.get().getMessage());
-            return ResponseEntity.badRequest().body(validationResult.get().getMessage());
-        }
-
-        this.reservationService.createReservation(entity);
         
-        return ResponseEntity.ok().build();
+        ReservationResult<ReservationMessage> validatedReservation = this.reservationService.createReservation(entity);
+        if(validatedReservation.isValid())
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().body(validatedReservation.getMessage());
+ 
+    }
+
+    @ExceptionHandler(InvalidReservationException.class)
+    public ResponseEntity<String> handleValidationException(InvalidReservationException ex) {
+        logger.warn("Validation failed: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
 }
